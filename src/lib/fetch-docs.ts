@@ -37,7 +37,12 @@ async function assertPublicHost(url: URL): Promise<void> {
   if (host === "localhost" || host.endsWith(".local") || host.endsWith(".internal")) {
     throw new Error(`Refusing to fetch internal host: ${host}`);
   }
-  const ips = isIP(host) ? [{ address: host }] : await lookup(host, { all: true });
+  let ips: Array<{ address: string }>;
+  try {
+    ips = isIP(host) ? [{ address: host }] : await lookup(host, { all: true });
+  } catch {
+    throw new Error(`Could not resolve ${host} - check the URL`);
+  }
   for (const { address } of ips) {
     if (isPrivateIp(address)) {
       throw new Error(`Refusing to fetch private address for host: ${host}`);
