@@ -22,6 +22,7 @@ const SECTIONS = [
   ["quickstart", "Quickstart"],
   ["widget", "Website widget"],
   ["rest", "REST API"],
+  ["actions", "Actions & webhooks"],
   ["react", "React"],
   ["forget", "Forget API"],
 ];
@@ -136,6 +137,80 @@ Content-Type: application/json
             <li>grounded is false when the agent could not answer from your knowledge - a good signal to escalate to a human.</li>
           </ul>
 
+          <H2 id="actions">Actions &amp; webhooks</H2>
+          <p className="mb-4 mt-3 text-sm leading-relaxed text-slate-400">
+            Actions let the agent do things, not just answer: file a ticket,
+            ping your team, hit your API. You describe in plain English when an
+            action should fire and which fields the agent must collect; when a
+            conversation matches, EverDesk POSTs a signed JSON payload to your
+            webhook and tells the customer what it did. Every fired action is
+            written into that customer&apos;s memory, so next week the agent
+            remembers what it already did for them.
+          </p>
+          <p className="mb-4 text-sm leading-relaxed text-slate-400">
+            Configure actions in your dashboard under Actions. Point the URL at
+            your own endpoint, or at Zapier / Make / n8n to reach email, Slack,
+            CRMs and everything else without writing code. (Slack and Discord
+            incoming webhooks expect their own payload shape, so route those
+            through one of the automation tools.)
+          </p>
+          <Code>{`POST <your webhook URL>
+Content-Type: application/json
+X-Everdesk-Timestamp: 1783150000
+X-Everdesk-Signature: sha256=3f5c...9d21
+
+{
+  "action": "create_refund_ticket",
+  "test": false,
+  "company": { "slug": "acme", "name": "Acme" },
+  "customer": {
+    "customerId": "cust_2b88ecea",
+    "email": "customer@example.com"
+  },
+  "params": { "order_id": "4711" },
+  "conversation": {
+    "sessionId": "everdesk-acme-1a2b3c-1783150000000",
+    "message": "I want a refund for order 4711",
+    "answer": "I've filed that refund for you..."
+  },
+  "firedAt": "2026-07-04T12:00:00.000Z"
+}`}</Code>
+          <p className="mb-4 mt-4 text-sm leading-relaxed text-slate-400">
+            Verify the signature before trusting a payload. The signature is an
+            HMAC-SHA256 of <span className="font-mono text-slate-300">timestamp + &quot;.&quot; + rawBody</span>{" "}
+            using the signing secret shown once when you created the action.
+            Reject requests older than 5 minutes to block replays:
+          </p>
+          <Code>{`import { createHmac, timingSafeEqual } from "node:crypto";
+
+function verifyEverdesk(rawBody, headers, secret) {
+  const ts = headers["x-everdesk-timestamp"];
+  const sig = headers["x-everdesk-signature"]; // "sha256=<hex>"
+  if (Math.abs(Date.now() / 1000 - Number(ts)) > 300) return false;
+  const expected = "sha256=" + createHmac("sha256", secret)
+    .update(ts + "." + rawBody)
+    .digest("hex");
+  return expected.length === sig.length &&
+    timingSafeEqual(Buffer.from(expected), Buffer.from(sig));
+}`}</Code>
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+            <li>
+              When an action fires, the chat response gains an{" "}
+              <span className="font-mono text-slate-300">
+                action: {"{ \"name\", \"status\": \"fired\" }"}
+              </span>{" "}
+              field and the receipt is appended to the answer.
+            </li>
+            <li>
+              Only https URLs resolving to public addresses are accepted, and
+              redirects are never followed.
+            </li>
+            <li>
+              Rate limits apply: 5 fires per customer per hour, 100 per company
+              per day, and duplicate fires within 60 seconds are dropped.
+            </li>
+          </ul>
+
           <H2 id="react">React</H2>
           <p className="mb-4 mt-3 text-sm leading-relaxed text-slate-400">
             Embed the chat surface directly in any React app:
@@ -157,14 +232,14 @@ Content-Type: application/json
           <H2 id="forget">Forget API</H2>
           <p className="mb-4 mt-3 text-sm leading-relaxed text-slate-400">
             Wire right-to-be-forgotten into your own account deletion flow. This
-            hard-deletes the customer's memory items from the graph and vector
+            hard-deletes the customer&apos;s memory items from the graph and vector
             store.
           </p>
           <Code>{`POST https://everdesk.allensaji.dev/api/companies/{slug}/customers/{customerId}/forget
 
 // -> { "status": "forgotten", "deleted": 4 }`}</Code>
           <p className="mt-3 text-sm leading-relaxed text-slate-400">
-            Verify it in the dashboard: the customer's memory graph drops to
+            Verify it in the dashboard: the customer&apos;s memory graph drops to
             zero nodes.
           </p>
 

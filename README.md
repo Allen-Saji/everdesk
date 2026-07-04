@@ -61,6 +61,20 @@ the public docs, is in [docs/cognee-api-findings.md](docs/cognee-api-findings.md
   the widget consumes this same endpoint; wire it into any product or backend.
 - **Forget API**: `POST /api/companies/{slug}/customers/{id}/forget` for GDPR
   flows.
+- **Actions**: companies configure webhook actions in the dashboard (plain-
+  English trigger + fields to collect + URL). A Groq-routed tool call decides
+  when to fire; payloads are HMAC-signed (`X-Everdesk-Signature`), SSRF-guarded
+  (https only, public addresses only, no redirects, socket-time DNS checks),
+  rate-capped (5/customer/hour, 100/company/day, 60s dedupe), and every fired
+  action is written back into the customer's memory graph so the agent
+  remembers what it did. Docs: `/docs#actions`.
+
+## Known limitations
+
+The dashboard is unauthenticated (hackathon build): anyone who knows a company
+slug can read its dashboard and edit its action configs. Action endpoints are
+rate limited per slug and per IP, secrets are write-only, and webhook responses
+are never reflected, but config integrity ultimately needs dashboard auth.
 
 ## Stack
 
