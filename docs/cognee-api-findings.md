@@ -64,6 +64,13 @@ was pulled from <tenant>/openapi.json.
     otherwise"). Customer scoping comes from the customer token embedded in
     remembered text + the query.
 
+17. DELETE-RESIDUE WARNING (verified 2026-07-04): dataset ids are
+    deterministic by name+owner. Deleting a dataset and recreating the same
+    name yields the SAME id with broken server-side residue - cognify then
+    returns DATASET_PROCESSING_ERRORED reproducibly, while a fresh name works.
+    Rule: never reuse a deleted dataset name. Test companies get unique slugs;
+    the demo company (px402) is provisioned once and never deleted.
+
 ## EverDesk architecture consequences
 
 - Chat turn = 1 recall (answer + session log). Thumbs = FeedbackEntry chained
