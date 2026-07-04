@@ -74,10 +74,11 @@ export async function GET(_req: NextRequest, { params }: Params) {
   const all = await datasetStatus();
   const kb = all[company.kbId] ?? "UNKNOWN";
   const memory = all[company.memoryId] ?? "UNKNOWN";
-  const done = (s: string) => s === "DATASET_PROCESSING_COMPLETED" || s === "UNKNOWN";
+  const active = (s: string) => s.includes("STARTED") || s.includes("INITIATED");
   return NextResponse.json({
     kb,
     memory,
-    training: !done(kb),
+    training: active(kb),
+    errored: kb === "DATASET_PROCESSING_ERRORED",
   });
 }
