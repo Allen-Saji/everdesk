@@ -122,9 +122,6 @@ export default function LandingPage() {
             <a href="#integrate" className="hidden text-slate-400 hover:text-white sm:block">
               Integrate
             </a>
-            <a href="#pricing" className="hidden text-slate-400 hover:text-white sm:block">
-              Pricing
-            </a>
             <Link
               href="/onboarding"
               className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,0.35)] hover:bg-indigo-400"
@@ -350,73 +347,6 @@ export default function LandingPage() {
         />
         <div className="mt-12">
           <CodeTabs />
-        </div>
-      </section>
-
-      {/* pricing */}
-      <section id="pricing" className="border-t border-white/5 bg-[#090911] py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <SectionHeading
-            eyebrow="Pricing"
-            title="Early access plans"
-            sub="Usage-based memory, priced simply while we are in preview."
-          />
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {[
-              {
-                name: "Sandbox",
-                price: "Free",
-                blurb: "Kick the tires",
-                items: ["1 company", "Widget + API", "Full memory features", "Community support"],
-                featured: false,
-              },
-              {
-                name: "Growth",
-                price: "$99/mo",
-                blurb: "For live products",
-                items: ["3 companies", "Priority pipelines", "Ops dashboard", "Email support"],
-                featured: true,
-              },
-              {
-                name: "Scale",
-                price: "Custom",
-                blurb: "Serious volume",
-                items: ["Unlimited companies", "Dedicated tenancy", "SLA", "Founder on call"],
-                featured: false,
-              },
-            ].map((tier) => (
-              <div
-                key={tier.name}
-                className={`rounded-2xl border p-6 ${
-                  tier.featured
-                    ? "border-indigo-400/50 bg-indigo-500/10 shadow-[0_0_48px_rgba(99,102,241,0.15)]"
-                    : "border-white/10 bg-[#0d0d18]"
-                }`}
-              >
-                <p className="text-sm font-semibold text-slate-200">{tier.name}</p>
-                <p className="mt-3 font-mono text-3xl font-semibold text-white">{tier.price}</p>
-                <p className="mt-1 text-xs text-slate-500">{tier.blurb}</p>
-                <ul className="mt-5 space-y-2 text-sm text-slate-400">
-                  {tier.items.map((it) => (
-                    <li key={it} className="flex gap-2">
-                      <span className="text-indigo-400">+</span>
-                      {it}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/onboarding"
-                  className={`mt-6 block rounded-lg py-2 text-center text-sm font-semibold ${
-                    tier.featured
-                      ? "bg-indigo-500 text-white hover:bg-indigo-400"
-                      : "border border-slate-700 text-slate-300 hover:border-slate-500"
-                  }`}
-                >
-                  Start now
-                </Link>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
