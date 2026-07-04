@@ -8,8 +8,9 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const envPath = resolve(root, ".env.local");
-if (existsSync(envPath)) {
+for (const f of [".env.local", ".env"]) {
+  const envPath = resolve(root, f);
+  if (!existsSync(envPath)) continue;
   for (const line of readFileSync(envPath, "utf8").split("\n")) {
     const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?([^"#]*)"?\s*$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
