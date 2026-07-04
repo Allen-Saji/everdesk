@@ -85,7 +85,7 @@ export default function Chat({ companyKey }: { companyKey: string }) {
   };
 
   return (
-    <div className="flex h-dvh flex-col bg-white text-slate-900">
+    <div className="flex h-full flex-col bg-white text-slate-900">
       <header className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
           {companyName.slice(0, 1).toUpperCase()}

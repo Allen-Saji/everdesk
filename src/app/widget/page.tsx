@@ -18,7 +18,9 @@ export default async function WidgetPage({
   }
   return (
     <Suspense>
-      <Chat companyKey={key} />
+      <div className="h-dvh">
+        <Chat companyKey={key} />
+      </div>
     </Suspense>
   );
 }
