@@ -20,4 +20,8 @@ export const env = {
   get kvToken() {
     return required("KV_REST_API_TOKEN");
   },
+  /** Optional: empty string disables the actions layer entirely. */
+  get groqApiKey() {
+    return process.env.GROQ_API_KEY ?? "";
+  },
 };
