@@ -67,7 +67,10 @@ export default function Wizard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (!trainRes.ok) throw new Error("training failed");
+      if (!trainRes.ok) {
+        const err = await trainRes.json().catch(() => null);
+        throw new Error(err?.error ?? "training failed");
+      }
       setStep(3, "done");
 
       // cognify poll

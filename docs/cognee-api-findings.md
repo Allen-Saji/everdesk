@@ -71,6 +71,13 @@ was pulled from <tenant>/openapi.json.
     Rule: never reuse a deleted dataset name. Test companies get unique slugs;
     the demo company (px402) is provisioned once and never deleted.
 
+18. URL INGESTION NOT SUPPORTED (verified 2026-07-04, surfaced by a live
+    onboarding failure): despite docs claiming /add accepts URLs and GitHub
+    repo URLs, this tenant's POST /api/v1/add returns 422
+    "Expected UploadFile, received: <class 'str'>" for any URL string.
+    EverDesk fetches user URLs server-side (SSRF-guarded, html-to-text) and
+    ingests via /add_text instead. See src/lib/fetch-docs.ts.
+
 ## EverDesk architecture consequences
 
 - Chat turn = 1 recall (answer + session log). Thumbs = FeedbackEntry chained

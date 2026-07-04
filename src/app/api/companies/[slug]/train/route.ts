@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { addData, addText, cognify, datasetStatus } from "@/lib/cognee";
 import { getCompany } from "@/lib/companies";
 import { emitEvent } from "@/lib/events";
+import { fetchUrlAsText } from "@/lib/fetch-docs";
 
 export const maxDuration = 120;
 
@@ -42,14 +43,27 @@ export async function POST(req: NextRequest, { params }: Params) {
           return NextResponse.json({ error: `Invalid URL: ${u}` }, { status: 400 });
         }
       }
+      // Cognee's /add rejects URL strings on this tenant (findings #18):
+      // fetch pages ourselves and ingest the extracted text.
+      const urlTexts: string[] = [];
+      for (const url of urls) {
+        try {
+          urlTexts.push(await fetchUrlAsText(url));
+        } catch (e) {
+          return NextResponse.json(
+            { error: e instanceof Error ? e.message : `Could not fetch ${url}` },
+            { status: 422 },
+          );
+        }
+      }
+      const allTexts = [...texts, ...urlTexts];
+      if (allTexts.length) {
+        await addText(allTexts, company.kbDataset);
+      }
       if (texts.length) {
-        await addText(texts, company.kbDataset);
         sources.push(`${texts.length} pasted text${texts.length > 1 ? "s" : ""}`);
       }
-      if (urls.length) {
-        await addData(urls.map((url) => ({ url })), company.kbDataset);
-        sources.push(...urls);
-      }
+      sources.push(...urls);
     }
 
     await cognify([company.kbDataset], true);
