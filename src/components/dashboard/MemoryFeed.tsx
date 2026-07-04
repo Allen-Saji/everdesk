@@ -10,6 +10,7 @@ const TYPE_STYLES: Record<string, string> = {
   forget: "text-red-400",
   train: "text-violet-400",
   provision: "text-indigo-400",
+  action: "text-fuchsia-400",
 };
 
 export default function MemoryFeed({ slug }: { slug: string }) {

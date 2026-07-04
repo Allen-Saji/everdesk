@@ -4,7 +4,14 @@
 import { randomBytes } from "node:crypto";
 import { kv } from "./kv";
 
-export type OpsEventType = "recall" | "remember" | "resolve" | "forget" | "train" | "provision";
+export type OpsEventType =
+  | "recall"
+  | "remember"
+  | "resolve"
+  | "forget"
+  | "train"
+  | "provision"
+  | "action";
 
 export interface OpsEvent {
   id: string;

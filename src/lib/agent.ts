@@ -5,6 +5,21 @@
 import { recall, rememberDurable, RecallResult } from "./cognee";
 import { Company, Visitor } from "./companies";
 import { emitEvent } from "./events";
+import { env } from "./env";
+import {
+  bumpFireCount,
+  checkAndCountAction,
+  checkRouterBudget,
+  dedupeFire,
+  listEnabledActions,
+} from "./actions";
+import { routeAction } from "./action-router";
+import {
+  ActionPayload,
+  fireWebhook,
+  renderReceipt,
+  sanitizeInline,
+} from "./webhook";
 
 const REFUSAL =
   /don'?t have|do not have|no (information|relevant)|not (in|part of|available)|cannot (find|answer)|couldn'?t find|i'?m sorry|unable to/i;
@@ -46,6 +61,8 @@ export interface ChatTurnResult {
   sessionId: string;
   customerId: string;
   latencyMs: number;
+  /** Present only when a configured action actually fired this turn. */
+  action?: { name: string; status: "fired" };
 }
 
 /**
@@ -78,6 +95,133 @@ async function customerMemoryContext(
     return chunks.join("\n---\n").slice(0, 4000);
   } catch {
     return ""; // empty or brand-new memory graph
+  }
+}
+
+/**
+ * The actions layer: after the answer is decided, ask the Groq router whether
+ * one configured action should fire, gate it (budget, rate caps, dedupe), fire
+ * the webhook in-request so the receipt is truthful, and defer bookkeeping.
+ * Every failure path returns null: the answer is never blocked by this layer.
+ */
+async function maybeFireAction(opts: {
+  company: Company;
+  visitor: Visitor;
+  sessionId: string;
+  message: string;
+  answer: string;
+  grounded: boolean;
+  history: string;
+  defer: (task: () => Promise<unknown>) => void;
+}): Promise<{ name: string; receipt: string } | null> {
+  const { company, visitor, defer } = opts;
+  try {
+    if (!env.groqApiKey) return null;
+    const configs = await listEnabledActions(company.slug);
+    if (!configs.length) return null;
+    if (!(await checkRouterBudget(company.slug))) return null;
+
+    const routed = await routeAction({
+      configs,
+      message: opts.message,
+      answer: opts.answer,
+      grounded: opts.grounded,
+      history: opts.history,
+    });
+    if (!routed) return null;
+    const label = `${routed.config.name} for ${visitor.customerId}`;
+
+    const gate = await checkAndCountAction(company.slug, visitor.customerId);
+    if (gate !== "ok") {
+      defer(() =>
+        emitEvent(company.slug, {
+          type: "action",
+          label,
+          detail: `skipped: ${gate}`,
+          customerId: visitor.customerId,
+        }),
+      );
+      return null;
+    }
+    if (!(await dedupeFire(company.slug, routed.config.id, visitor.customerId, routed.params))) {
+      defer(() =>
+        emitEvent(company.slug, {
+          type: "action",
+          label,
+          detail: "skipped: duplicate fire within 60s",
+          customerId: visitor.customerId,
+        }),
+      );
+      return null;
+    }
+
+    const payload: ActionPayload = {
+      action: routed.config.name,
+      test: false,
+      company: { slug: company.slug, name: company.name },
+      customer: {
+        customerId: visitor.customerId,
+        email: visitor.email,
+        name: visitor.name,
+      },
+      params: routed.params,
+      conversation: {
+        sessionId: opts.sessionId,
+        message: opts.message,
+        answer: opts.answer.slice(0, 4000),
+      },
+      firedAt: new Date().toISOString(),
+    };
+    const result = await fireWebhook(routed.config, payload);
+
+    if (result.status !== "fired") {
+      defer(() =>
+        emitEvent(company.slug, {
+          type: "action",
+          label,
+          detail: `${result.status}${result.httpStatus ? ` (HTTP ${result.httpStatus})` : ""}`,
+          latencyMs: result.ms,
+          customerId: visitor.customerId,
+        }),
+      );
+      return null;
+    }
+
+    // Success bookkeeping is deferred; the memory record is bounded and
+    // sanitized (params are customer-influenced text) and written only on 2xx.
+    const date = new Date().toISOString().slice(0, 10);
+    const paramsText = Object.entries(routed.params)
+      .map(([k, v]) => `${k}=${sanitizeInline(v, 80)}`)
+      .join(", ");
+    const memoryText = sanitizeInline(
+      `${customerPrefix(visitor)}: on ${date} the support agent performed the action "${routed.config.name}"${paramsText ? ` (${paramsText})` : ""} for this customer and it was delivered successfully.`,
+      300,
+    );
+    defer(async () => {
+      await bumpFireCount(company.slug, routed.config.id);
+      await rememberDurable({
+        text: memoryText,
+        filename: `${visitor.customerId}-action-${Date.now()}.txt`,
+        datasetName: company.memoryDataset,
+        nodeSet: [`customer:${visitor.customerId}`],
+        runInBackground: true,
+      });
+      await emitEvent(company.slug, {
+        type: "action",
+        label,
+        detail: `fired (HTTP ${result.httpStatus}) in ${result.ms}ms`,
+        latencyMs: result.ms,
+        customerId: visitor.customerId,
+        dataset: company.memoryDataset,
+      });
+    });
+
+    return {
+      name: routed.config.name,
+      receipt: renderReceipt(routed.config.receiptTemplate, routed.config.name, routed.params),
+    };
+  } catch {
+    return null; // fail closed for the action, open for the answer
   }
 }
 
@@ -131,6 +275,19 @@ export async function runChatTurn(opts: {
     }),
   );
 
+  // Actions layer: no-op unless the company configured actions AND the Groq
+  // key is present. The webhook fires in-request so the receipt is truthful.
+  const fired = await maybeFireAction({
+    company,
+    visitor,
+    sessionId,
+    message,
+    answer,
+    grounded,
+    history,
+    defer,
+  });
+
   if (grounded) {
     // Durable per-customer memory: background pipeline into the memory graph.
     const date = new Date().toISOString().slice(0, 10);
@@ -154,11 +311,12 @@ export async function runChatTurn(opts: {
   }
 
   return {
-    answer,
+    answer: fired ? `${answer}\n\n${fired.receipt}` : answer,
     grounded,
     sessionId,
     customerId: visitor.customerId,
     latencyMs,
+    ...(fired ? { action: { name: fired.name, status: "fired" as const } } : {}),
   };
 }
 
