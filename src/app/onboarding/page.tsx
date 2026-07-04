@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Wizard from "@/components/onboarding/Wizard";
 
-export const metadata = { title: "Onboard your company - EverDesk" };
+export const metadata = { title: "Onboard your company" };
 
 export default function OnboardingPage() {
   return (

@@ -19,10 +19,33 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://everdesk.allensaji.dev";
+const TITLE = "EverDesk - a support agent that never forgets a customer";
+const DESCRIPTION =
+  "Train a support agent on your docs in minutes, embed it with one line. It remembers every customer, learns from every resolution, takes action through your webhooks, and can provably forget. Memory by Cognee Cloud.";
+
 export const metadata: Metadata = {
-  title: "EverDesk - a support agent that never forgets a customer",
-  description:
-    "Train a support agent on your docs in minutes, embed it with one line. It remembers every customer, learns from every resolution, and can provably forget. Memory by Cognee Cloud.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s - EverDesk",
+  },
+  description: DESCRIPTION,
+  applicationName: "EverDesk",
+  keywords: ["AI support agent", "customer support", "chat widget", "agent memory", "Cognee"],
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "EverDesk",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    creator: "@SajiBhai011",
+  },
 };
 
 export default function RootLayout({

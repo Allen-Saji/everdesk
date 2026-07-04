@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Docs - EverDesk" };
+export const metadata = { title: "Docs" };
 
 function Code({ children }: { children: string }) {
   return (
