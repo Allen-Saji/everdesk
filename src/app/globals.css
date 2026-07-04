@@ -10,17 +10,107 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-instrument-serif);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+/* ---- landing (dark instrument) ---- */
+
+.font-display {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+}
+
+.landing ::selection {
+  background: rgba(99, 102, 241, 0.45);
+  color: #fff;
+}
+
+@keyframes ed-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ed-rise {
+  animation: ed-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes ed-node-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ed-ignite {
+  0% {
+    opacity: 0;
+    r: 0.5;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes ed-edge-draw {
+  from {
+    stroke-dashoffset: 260;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ed-node {
+  animation:
+    ed-ignite 1.4s ease-out both,
+    ed-node-pulse 5s ease-in-out infinite 1.6s;
+}
+
+.ed-edge {
+  stroke-dasharray: 260;
+  animation: ed-edge-draw 2.2s ease-out both;
+}
+
+@keyframes ed-scroll-feed {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.ed-feed-scroll {
+  animation: ed-scroll-feed 24s linear infinite;
+}
+
+@keyframes ed-glow-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4%, -3%) scale(1.08);
+  }
+}
+
+.ed-glow {
+  animation: ed-glow-drift 14s ease-in-out infinite;
 }
