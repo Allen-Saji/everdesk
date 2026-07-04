@@ -48,6 +48,39 @@ export interface ChatTurnResult {
   latencyMs: number;
 }
 
+/**
+ * Cheap customer-history lookup: CHUNKS retrieval (no LLM, no session entry).
+ * Chunks are filtered to this customer via the identity token embedded in
+ * every durable write, so one shared memory graph never leaks across
+ * customers.
+ */
+async function customerMemoryContext(
+  memoryDataset: string,
+  customerId: string,
+  message: string,
+): Promise<string> {
+  try {
+    const results = await recall({
+      query: `${customerId} ${message}`,
+      datasets: [memoryDataset],
+      searchType: "CHUNKS",
+      topK: 8,
+    });
+    const chunks = results
+      .map((r) =>
+        typeof r.text === "string"
+          ? r.text
+          : typeof (r as { search_result?: unknown }).search_result === "string"
+            ? String((r as { search_result?: unknown }).search_result)
+            : "",
+      )
+      .filter((t) => t.includes(customerId));
+    return chunks.join("\n---\n").slice(0, 4000);
+  } catch {
+    return ""; // empty or brand-new memory graph
+  }
+}
+
 export async function runChatTurn(opts: {
   company: Company;
   visitor: Visitor;
@@ -60,11 +93,23 @@ export async function runChatTurn(opts: {
   const defer = opts.defer ?? ((task) => void task().catch(() => {}));
   const t0 = Date.now();
 
+  // Step 1: customer history (cheap, sessionless - avoids the per-dataset
+  // double logging and double LLM completion of a multi-dataset recall).
+  const history = await customerMemoryContext(
+    company.memoryDataset,
+    visitor.customerId,
+    message,
+  );
+
+  // Step 2: ONE recall against the KB = one completion, one session entry.
+  const historyBlock = history
+    ? `\n\nWhat you remember about this customer from previous conversations:\n${history}\nUse this history naturally when relevant.`
+    : "\n\nThis appears to be a new customer with no previous history.";
   const results = await recall({
     query: `${customerPrefix(visitor)} asks: ${message}`,
-    datasets: [company.kbDataset, company.memoryDataset],
+    datasets: [company.kbDataset],
     sessionId,
-    systemPrompt: buildSystemPrompt(company),
+    systemPrompt: buildSystemPrompt(company) + historyBlock,
     topK: 12,
   });
   const latencyMs = Date.now() - t0;
