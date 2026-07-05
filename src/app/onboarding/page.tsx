@@ -13,7 +13,7 @@ export default function OnboardingPage() {
             Ever<span className="text-indigo-400">Desk</span>
           </Link>
           <div className="ml-auto">
-            <AuthControl theme="dark" />
+            <AuthControl theme="dark" variant="menu" />
           </div>
         </nav>
       </header>

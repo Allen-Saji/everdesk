@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getCompany } from "@/lib/companies";
 import { isMember } from "@/lib/members";
+import AuthControl from "@/components/auth/AuthControl";
 
 const NAV = [
   { href: "", label: "Overview" },
@@ -79,19 +80,7 @@ export default async function DashboardLayout({
           <Link href={`/dashboard/${slug}`} className="text-base font-bold tracking-tight">
             Ever<span className="text-indigo-600">Desk</span>
           </Link>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/" });
-            }}
-          >
-            <button
-              type="submit"
-              className="text-sm font-medium text-slate-600 hover:text-indigo-700"
-            >
-              Sign out
-            </button>
-          </form>
+          <AuthControl theme="light" variant="menu" />
         </header>
         <main className="min-w-0 flex-1 p-6 sm:p-8">{children}</main>
       </div>

@@ -116,20 +116,14 @@ export default function LandingPage() {
           <Link href="/" className="text-lg font-bold tracking-tight text-white">
             Ever<span className="text-indigo-400">Desk</span>
           </Link>
-          <div className="ml-auto flex items-center gap-6 text-sm">
+          <div className="ml-auto flex items-center gap-5 text-sm">
             <Link href="/docs" className="text-slate-400 hover:text-white">
               Docs
             </Link>
             <a href="#integrate" className="hidden text-slate-400 hover:text-white sm:block">
               Integrate
             </a>
-            <Link
-              href="/onboarding"
-              className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,0.35)] hover:bg-indigo-400"
-            >
-              Get started
-            </Link>
-            <AuthControl theme="dark" />
+            <AuthControl theme="dark" variant="nav" />
           </div>
         </nav>
       </header>

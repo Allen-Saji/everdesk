@@ -1,47 +1,56 @@
-// Reusable sign-in / sign-out control. Server component: reads the session and
-// renders "Sign in" when signed out, or the user's name + Dashboard link +
-// "Sign out" when signed in. `theme` adapts colors for the dark marketing pages
-// vs the light dashboard. Note: because it reads the session cookie, any page
-// embedding it is rendered dynamically.
+// Auth-aware nav control. Reads the session and renders one of two shapes.
+//
+// variant "nav" (marketing header): the primary CTA swaps with auth state -
+// "Get started" when signed out, "Dashboard" when signed in - and identity /
+// sign out collapse into the avatar menu, so the nav never stacks competing
+// buttons.
+//
+// variant "menu" (onboarding, dashboard mobile bar): just the avatar menu.
+//
+// Reads the session cookie, so any embedding page renders dynamically.
 
 import Link from "next/link";
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
+import UserMenu from "./UserMenu";
 
-export default async function AuthControl({ theme = "dark" }: { theme?: "dark" | "light" }) {
+const CTA =
+  "rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,0.35)] hover:bg-indigo-400";
+
+export default async function AuthControl({
+  theme = "dark",
+  variant = "nav",
+}: {
+  theme?: "dark" | "light";
+  variant?: "nav" | "menu";
+}) {
   const session = await auth();
-  const dark = theme === "dark";
-  const link = dark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-indigo-700";
+  const user = session?.user;
+  const ghost =
+    theme === "dark" ? "text-slate-300 hover:text-white" : "text-slate-600 hover:text-slate-900";
 
-  if (!session?.user) {
+  if (variant === "menu") {
+    return user ? <UserMenu name={user.name ?? ""} email={user.email ?? ""} theme={theme} /> : null;
+  }
+
+  if (!user) {
     return (
-      <Link href="/signin" className={`text-sm ${link}`}>
-        Sign in
-      </Link>
+      <>
+        <Link href="/signin" className={`text-sm ${ghost}`}>
+          Sign in
+        </Link>
+        <Link href="/onboarding" className={CTA}>
+          Get started
+        </Link>
+      </>
     );
   }
 
-  const label = session.user.name || session.user.email || "Account";
   return (
-    <div className="flex items-center gap-4 text-sm">
-      <Link href="/dashboard" className={link}>
+    <>
+      <Link href="/dashboard" className={CTA}>
         Dashboard
       </Link>
-      <span
-        className={`hidden max-w-[10rem] truncate sm:inline ${dark ? "text-slate-500" : "text-slate-400"}`}
-        title={session.user.email ?? undefined}
-      >
-        {label}
-      </span>
-      <form
-        action={async () => {
-          "use server";
-          await signOut({ redirectTo: "/" });
-        }}
-      >
-        <button type="submit" className={link}>
-          Sign out
-        </button>
-      </form>
-    </div>
+      <UserMenu name={user.name ?? ""} email={user.email ?? ""} theme={theme} />
+    </>
   );
 }
