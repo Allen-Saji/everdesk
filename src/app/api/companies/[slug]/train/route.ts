@@ -6,6 +6,7 @@ import { addData, addText, cognify, datasetStatus } from "@/lib/cognee";
 import { getCompany } from "@/lib/companies";
 import { emitEvent } from "@/lib/events";
 import { fetchUrlAsText } from "@/lib/fetch-docs";
+import { requireMember } from "@/lib/session";
 
 export const maxDuration = 120;
 
@@ -13,6 +14,8 @@ type Params = { params: Promise<{ slug: string }> };
 
 export async function POST(req: NextRequest, { params }: Params) {
   const { slug } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 
@@ -82,6 +85,8 @@ export async function POST(req: NextRequest, { params }: Params) {
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { slug } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 

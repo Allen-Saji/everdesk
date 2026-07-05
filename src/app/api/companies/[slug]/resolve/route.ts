@@ -5,11 +5,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { ingestSkill, rememberDurable } from "@/lib/cognee";
 import { getCompany } from "@/lib/companies";
 import { emitEvent } from "@/lib/events";
+import { requireMember } from "@/lib/session";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 

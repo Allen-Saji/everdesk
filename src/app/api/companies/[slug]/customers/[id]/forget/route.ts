@@ -6,6 +6,7 @@ import { deleteDataItem, listDataItems } from "@/lib/cognee";
 import { getCompany, getCustomer } from "@/lib/companies";
 import { emitEvent } from "@/lib/events";
 import { kv } from "@/lib/kv";
+import { requireMember } from "@/lib/session";
 
 export const maxDuration = 60;
 
@@ -14,6 +15,8 @@ export async function POST(
   { params }: { params: Promise<{ slug: string; id: string }> },
 ) {
   const { slug, id } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
   const customer = await getCustomer(slug, id);

@@ -8,6 +8,7 @@ import { getCompany } from "@/lib/companies";
 import { callerIp, configWriteAllowed, getAction } from "@/lib/actions";
 import { ActionPayload, fireWebhook } from "@/lib/webhook";
 import { emitEvent } from "@/lib/events";
+import { requireMember } from "@/lib/session";
 
 export const maxDuration = 30;
 
@@ -15,6 +16,8 @@ type Params = { params: Promise<{ slug: string; actionId: string }> };
 
 export async function POST(req: NextRequest, { params }: Params) {
   const { slug, actionId } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 

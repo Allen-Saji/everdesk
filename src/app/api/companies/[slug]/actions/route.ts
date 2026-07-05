@@ -17,11 +17,14 @@ import {
 } from "@/lib/actions";
 import { assertPublicUrl } from "@/lib/webhook";
 import { emitEvent } from "@/lib/events";
+import { requireMember } from "@/lib/session";
 
 type Params = { params: Promise<{ slug: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { slug } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 
@@ -34,6 +37,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 export async function POST(req: NextRequest, { params }: Params) {
   const { slug } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 

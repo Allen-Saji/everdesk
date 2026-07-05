@@ -14,11 +14,14 @@ import {
   validateActionInput,
 } from "@/lib/actions";
 import { assertPublicUrl } from "@/lib/webhook";
+import { requireMember } from "@/lib/session";
 
 type Params = { params: Promise<{ slug: string; actionId: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { slug, actionId } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 
@@ -57,6 +60,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(req: NextRequest, { params }: Params) {
   const { slug, actionId } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 

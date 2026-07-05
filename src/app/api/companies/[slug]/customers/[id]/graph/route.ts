@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { datasetGraph } from "@/lib/cognee";
 import { getCompany } from "@/lib/companies";
 import { customerSubgraph } from "@/lib/graph";
+import { requireMember } from "@/lib/session";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> },
 ) {
   const { slug, id } = await params;
+  const gate = await requireMember(slug);
+  if ("error" in gate) return gate.error;
   const company = await getCompany(slug);
   if (!company) return NextResponse.json({ error: "Unknown company" }, { status: 404 });
 
