@@ -1,6 +1,7 @@
 import { randomBytes, createHash } from "node:crypto";
 import { kv } from "./kv";
 import { createDataset, registerAgent } from "./cognee";
+import { addMember, isMember } from "./members";
 
 export interface Company {
   slug: string;
@@ -56,16 +57,23 @@ export async function listCompanies(): Promise<Company[]> {
 
 /**
  * Idempotent provisioning: Cognee datasets are idempotent by name, and an
- * existing company record keeps its public key across re-runs.
+ * existing company record keeps its public key across re-runs. The caller
+ * (`ownerEmail`) becomes the owning member on first creation. Re-provisioning an
+ * existing company is only allowed for an existing member — otherwise the slug
+ * (derived from the name) would let a stranger claim an occupied namespace.
  */
 export async function provisionCompany(input: {
   name: string;
   siteUrl?: string;
   persona?: string;
+  ownerEmail: string;
 }): Promise<{ company: Company; created: boolean }> {
   const slug = slugify(input.name);
   if (!slug) throw new Error("Company name produces an empty slug");
   const existing = await getCompany(slug);
+  if (existing && !(await isMember(slug, input.ownerEmail))) {
+    throw new Error("A company with this name already exists");
+  }
 
   const kbDataset = `everdesk-${slug}-kb`;
   const memoryDataset = `everdesk-${slug}-memory`;
@@ -107,6 +115,10 @@ export async function provisionCompany(input: {
     kv().set(pkKey(company.publicKey), slug),
     kv().sadd("companies", slug),
   ]);
+
+  if (!existing) {
+    await addMember(slug, input.ownerEmail, "owner");
+  }
 
   return { company, created: !existing };
 }
