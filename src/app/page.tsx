@@ -90,6 +90,10 @@ const FAQS = [
     a: "No. Answers are generated server-side by the memory layer from your graph context. You bring documentation, not API keys.",
   },
   {
+    q: "Can it actually do things, or just answer?",
+    a: "Both. Beyond answering, you give it actions in plain English - refunds, tickets, escalations - and it triggers them through your webhooks (Zapier, Make, n8n, or a custom endpoint) with schema-validated parameters and HMAC-signed payloads. It never invents an action or its parameters; you declare both. And it remembers every action it took.",
+  },
+  {
     q: "How does 'forget me' work?",
     a: "Every memory written for a customer is a tracked data item. Forgetting hard-deletes those items from the graph and vector store, and you can verify it: the customer's memory graph visibly drops to zero nodes.",
   },
@@ -104,6 +108,10 @@ const FAQS = [
   {
     q: "How does it get smarter over time?",
     a: "When your team marks a conversation resolved, the verified solution is written into the knowledge graph and becomes a playbook. The next customer with the same problem gets the answer immediately.",
+  },
+  {
+    q: "Can my team share a workspace?",
+    a: "Yes. Sign in with Google and invite teammates by email. Every member gets full access to the workspace and its customer memory; owners manage the team.",
   },
 ];
 
@@ -147,9 +155,10 @@ export default function LandingPage() {
               className="ed-rise mt-6 max-w-xl text-lg leading-relaxed text-slate-400"
               style={{ animationDelay: "0.2s" }}
             >
-              Train it on your docs in minutes. Embed it with one line. It
-              greets returning customers with their history, learns from every
-              resolved ticket, and can provably forget anyone who asks.
+              Train it on your docs in minutes, embed it in one line. It greets
+              returning customers with their history, takes real action in your
+              stack - refunds, tickets, escalations - learns from every
+              resolution, and can provably forget anyone who asks.
             </p>
             <div className="ed-rise mt-8 flex flex-wrap gap-3" style={{ animationDelay: "0.3s" }}>
               <Link
@@ -209,7 +218,8 @@ export default function LandingPage() {
           Every support bot on the market is stateless retrieval over docs. The
           customer who wrote in three weeks ago is a stranger again today.
           EverDesk gives your agent a permanent, queryable memory of every
-          customer relationship.
+          customer relationship - and the hands to act on it, not just talk
+          about it.
         </p>
       </section>
 
@@ -217,15 +227,19 @@ export default function LandingPage() {
       <section className="mx-auto max-w-6xl px-6 pb-24">
         <SectionHeading
           eyebrow="What it does"
-          title="Memory, not just retrieval"
-          sub="Five things a stateless bot cannot do, out of the box."
+          title="Memory, and the hands to act"
+          sub="What a stateless support bot cannot do, out of the box."
         />
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           <FeatureCard
             tag="recall"
             title="Recognizes returning customers"
             body="A customer comes back days later, in a fresh session, and the agent picks up where you left off: 'Yes, we spoke on July 4 about error ZEN-42.'"
-            className="md:col-span-2"
+          />
+          <FeatureCard
+            tag="act"
+            title="Acts, not just answers"
+            body="Configure actions in plain English - refunds, tickets, escalations. The agent fires them mid-conversation through your webhooks, with validated parameters and a signed payload, then remembers what it did."
           />
           <FeatureCard
             tag="improve"
@@ -244,8 +258,8 @@ export default function LandingPage() {
           />
           <FeatureCard
             tag="ops"
-            title="Ops built in"
-            body="Every conversation is a session with transcript, tokens, cost, and feedback. A live memory feed shows each recall and remember as it happens."
+            title="Ops and team built in"
+            body="Sessions with transcript, tokens, cost, and feedback, plus a live memory feed. Sign in with Google and share the workspace with your team."
           />
         </div>
       </section>
@@ -290,7 +304,7 @@ export default function LandingPage() {
             <ArchBox label="Your product" sub="REST API" />
           </div>
           <div className="text-center font-mono text-xs text-slate-600">v</div>
-          <ArchBox label="EverDesk agent" sub="recall -> answer -> remember" accent />
+          <ArchBox label="EverDesk agent" sub="recall -> answer -> act -> remember" accent />
           <div className="text-center font-mono text-xs text-slate-600">v</div>
           <div className="grid grid-cols-2 gap-3">
             <ArchBox label="Knowledge graph" sub="docs + learned resolutions" />
@@ -318,6 +332,7 @@ export default function LandingPage() {
                 {[
                   ["Returning customer", "A stranger every time", "Greeted with full history"],
                   ["Resolved tickets", "Knowledge lost in logs", "Learned by the agent, reused forever"],
+                  ["Taking action", "Suggests; a human does the rest", "Fires your webhooks in-conversation"],
                   ["Delete my data", "Good luck with the logs", "Provable graph deletion"],
                   ["Understanding", "Embedding similarity", "Entities and relationships"],
                   ["Setup", "Weeks of integration", "Docs in, script tag out - minutes"],
@@ -370,7 +385,9 @@ export default function LandingPage() {
         <h2 className="font-display mx-auto max-w-2xl px-6 text-5xl text-white">
           Give your support a memory
         </h2>
-        <p className="mt-4 text-slate-400">Docs to deployed agent in minutes.</p>
+        <p className="mt-4 text-slate-400">
+          Docs to a deployed agent - one that remembers and acts - in minutes.
+        </p>
         <Link
           href="/onboarding"
           className="mt-8 inline-block rounded-xl bg-indigo-500 px-8 py-3.5 text-sm font-semibold text-white shadow-[0_0_40px_rgba(99,102,241,0.45)] hover:bg-indigo-400"
@@ -384,7 +401,7 @@ export default function LandingPage() {
           <p className="font-semibold text-slate-400">
             Ever<span className="text-indigo-400">Desk</span>
           </p>
-          <p>Support that never forgets. Memory by Cognee Cloud.</p>
+          <p>Support that never forgets, and acts. Memory by Cognee Cloud.</p>
           <div className="ml-auto flex gap-5">
             <Link href="/docs" className="hover:text-slate-300">
               Docs

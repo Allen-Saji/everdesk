@@ -151,8 +151,9 @@ those through Zapier, Make, or n8n.
 ## Self-hosting
 
 Prerequisites: Node 20+, a [Cognee Cloud](https://platform.cognee.ai) tenant,
-an [Upstash Redis](https://upstash.com) database, and optionally a
-[Groq](https://console.groq.com) key for the actions layer.
+an [Upstash Redis](https://upstash.com) database, a Google OAuth 2.0 client for
+dashboard sign-in, and optionally a [Groq](https://console.groq.com) key for the
+actions layer.
 
 ```bash
 git clone https://github.com/Allen-Saji/everdesk
@@ -169,6 +170,9 @@ npm run dev
 | `COGNEE_TENANT_ID` | no | Multi-tenant header, if your tenant needs it |
 | `KV_REST_API_URL` | yes | Upstash Redis REST URL |
 | `KV_REST_API_TOKEN` | yes | Upstash Redis REST token |
+| `AUTH_SECRET` | yes | Auth.js session signing secret (`npx auth secret`) |
+| `AUTH_GOOGLE_ID` | yes | Google OAuth client id (dashboard sign-in) |
+| `AUTH_GOOGLE_SECRET` | yes | Google OAuth client secret |
 | `GROQ_API_KEY` | no | Actions router; absent = actions layer silently off |
 
 `scripts/spike.mjs`, `spike2.mjs`, and `spike3.mjs` verify Cognee endpoint
@@ -181,7 +185,8 @@ suite against a local server.
 src/
   app/
     api/v1/chat/          public chat endpoint (widget + REST consumers)
-    api/companies/        provisioning, training, actions CRUD, forget, resolve
+    api/companies/        provisioning, training, actions CRUD, members, forget
+    api/auth/             Auth.js Google sign-in handler
     dashboard/[slug]/     overview, training, playground, actions, customers,
                           conversations, memory feed, settings
     widget/               iframe chat surface served to embed.js
@@ -192,23 +197,31 @@ src/
     action-router.ts      Groq tool-call routing with strict arg validation
     webhook.ts            SSRF-guarded, HMAC-signed webhook delivery
     companies.ts          company + visitor records (Upstash)
+    members.ts            team workspaces: owner/member roles (Upstash)
+    session.ts            per-route auth + membership gates
     events.ts             ops-event feed backing the live dashboard
+  auth.ts                 Auth.js (Google); proxy.ts guards /dashboard
 public/embed.js           the one-tag widget loader
 docs/                     architecture diagram + verified Cognee API findings
 ```
 
 ## Security notes
 
+- Dashboard access is authenticated with Google sign-in (Auth.js). Every
+  dashboard page and every `/api/companies/*` route enforces per-request
+  workspace membership, so a company's data and action configs are visible only
+  to its members, and the tenant list is never exposed.
+- Team workspaces: the creator is the owner and can invite teammates by email;
+  members get full access, owners manage the team. Membership lives in Upstash,
+  not the session token.
 - Secrets (webhook header values, signing secrets) are write-only: no GET
   endpoint ever returns them, and the signing secret is shown exactly once at
   creation.
 - The public chat endpoint treats all customer and retrieved content as data,
-  never instructions; action arguments are re-validated server-side against
-  the declared schema.
-- Known limitation: the dashboard is unauthenticated (hackathon build). Anyone
-  who knows a company slug can view its dashboard and edit its action configs.
-  Action endpoints are rate limited per slug and per IP as partial mitigation,
-  but config integrity ultimately needs dashboard auth.
+  never instructions; action arguments are re-validated server-side against the
+  declared schema. It is gated by a publishable key (safe to embed in client
+  code, like an Intercom app id); the actions router it can invoke is separately
+  rate, budget, and dedupe capped per customer, per company, and globally.
 
 ## Stack
 
