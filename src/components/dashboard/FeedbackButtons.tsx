@@ -23,20 +23,20 @@ export default function FeedbackButtons({
   };
 
   return sent ? (
-    <span className="text-xs text-slate-400">feedback sent ({sent})</span>
+    <span className="text-xs text-slate-500">feedback sent ({sent})</span>
   ) : (
     <span className="inline-flex gap-1">
       <button
         onClick={() => send(5, "up")}
         aria-label="Helpful"
-        className="rounded-md px-1.5 py-0.5 text-xs text-slate-400 hover:bg-emerald-50 hover:text-emerald-600"
+        className="rounded-md px-1.5 py-0.5 text-xs text-slate-500 hover:bg-emerald-500/10 hover:text-emerald-400"
       >
         +1
       </button>
       <button
         onClick={() => send(1, "down")}
         aria-label="Not helpful"
-        className="rounded-md px-1.5 py-0.5 text-xs text-slate-400 hover:bg-red-50 hover:text-red-500"
+        className="rounded-md px-1.5 py-0.5 text-xs text-slate-500 hover:bg-red-500/10 hover:text-red-400"
       >
         -1
       </button>

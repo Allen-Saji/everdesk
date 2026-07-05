@@ -32,14 +32,14 @@ export default function ForgetCustomerButton({
   };
 
   return state === "done" ? (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+    <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
       Customer forgotten. {deleted} memory item{deleted === 1 ? "" : "s"} hard-deleted
       from the graph. Ask the agent about them - it provably knows nothing.
     </div>
   ) : (
-    <div className="rounded-xl border border-red-100 bg-red-50/50 p-4">
-      <h3 className="text-sm font-semibold text-red-800">Right to be forgotten</h3>
-      <p className="mt-1 text-xs text-red-600/80">
+    <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+      <h3 className="text-sm font-semibold text-red-300">Right to be forgotten</h3>
+      <p className="mt-1 text-xs text-red-400/80">
         Hard-deletes every memory of this customer from the graph and vector
         store. This cannot be undone.
       </p>
@@ -54,22 +54,22 @@ export default function ForgetCustomerButton({
             </button>
             <button
               onClick={() => setState("idle")}
-              className="rounded-lg px-4 py-2 text-xs font-medium text-slate-500"
+              className="rounded-lg px-4 py-2 text-xs font-medium text-slate-400"
             >
               Cancel
             </button>
           </>
         ) : state === "working" ? (
-          <span className="text-xs text-red-700">Deleting memories...</span>
+          <span className="text-xs text-red-400">Deleting memories...</span>
         ) : (
           <button
             onClick={() => setState("confirm")}
-            className="rounded-lg border border-red-200 bg-white px-4 py-2 text-xs font-semibold text-red-700 hover:bg-red-50"
+            className="rounded-lg border border-red-500/30 bg-[#0d0d18] px-4 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10"
           >
             Forget this customer
           </button>
         )}
-        {state === "error" ? <p className="text-xs text-red-600">Failed - try again.</p> : null}
+        {state === "error" ? <p className="text-xs text-red-400">Failed - try again.</p> : null}
       </div>
     </div>
   );

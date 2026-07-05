@@ -14,13 +14,13 @@ export default async function CustomerDetailPage({
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <Link href={`/dashboard/${slug}/customers`} className="text-xs text-indigo-600">
+        <Link href={`/dashboard/${slug}/customers`} className="text-xs text-indigo-400">
           &larr; All customers
         </Link>
         <h1 className="mt-2 text-xl font-semibold">
           {customer?.email ?? "Forgotten customer"}
         </h1>
-        <p className="font-mono text-xs text-slate-400">{id}</p>
+        <p className="font-mono text-xs text-slate-500">{id}</p>
       </div>
 
       <CustomerGraph slug={slug} customerId={id} />

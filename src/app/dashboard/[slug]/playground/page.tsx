@@ -14,10 +14,10 @@ export default async function PlaygroundPage({
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-xl font-semibold">Playground</h1>
-      <p className="mb-6 text-sm text-slate-500">
+      <p className="mb-6 text-sm text-slate-400">
         Exactly what your customers get in the widget - same agent, same memory.
       </p>
-      <div className="h-[640px] overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+      <div className="h-[640px] overflow-hidden rounded-2xl border border-white/10 shadow-sm">
         <Chat companyKey={company.publicKey} />
       </div>
     </div>

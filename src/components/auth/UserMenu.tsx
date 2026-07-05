@@ -55,18 +55,18 @@ export default function UserMenu({
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-60 origin-top-right overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl ring-1 ring-black/5"
+          className="absolute right-0 z-50 mt-2 w-60 origin-top-right overflow-hidden rounded-xl border border-white/10 bg-[#0d0d18] shadow-xl ring-1 ring-black/5"
         >
-          <div className="border-b border-slate-100 px-4 py-3">
-            <p className="truncate text-sm font-medium text-slate-900">{name || "Signed in"}</p>
-            <p className="truncate text-xs text-slate-500">{email}</p>
+          <div className="border-b border-white/5 px-4 py-3">
+            <p className="truncate text-sm font-medium text-slate-100">{name || "Signed in"}</p>
+            <p className="truncate text-xs text-slate-400">{email}</p>
           </div>
           <div className="py-1">
             <Link
               href="/dashboard"
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="block px-4 py-2 text-sm text-slate-200 hover:bg-white/5"
             >
               Dashboard
             </Link>
@@ -74,7 +74,7 @@ export default function UserMenu({
               <button
                 type="submit"
                 role="menuitem"
-                className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                className="block w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10"
               >
                 Sign out
               </button>

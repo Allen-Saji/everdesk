@@ -38,43 +38,43 @@ export default async function SettingsPage({
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
         <h1 className="text-xl font-semibold">Settings</h1>
-        <p className="text-sm text-slate-500">Install the agent anywhere.</p>
+        <p className="text-sm text-slate-400">Install the agent anywhere.</p>
       </div>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
         <h2 className="text-sm font-semibold">Website widget</h2>
-        <p className="mb-4 mt-1 text-xs text-slate-500">
+        <p className="mb-4 mt-1 text-xs text-slate-400">
           One script tag, before the closing body tag. That is the whole install.
         </p>
         <CopyBlock code={snippet} />
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
         <h2 className="text-sm font-semibold">API access</h2>
-        <p className="mb-4 mt-1 text-xs text-slate-500">
+        <p className="mb-4 mt-1 text-xs text-slate-400">
           Wire the same agent into your product, mobile app, or internal tools.
           Full reference in the docs.
         </p>
         <CopyBlock code={apiExample} />
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
         <h2 className="text-sm font-semibold">Company</h2>
         <dl className="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div>
-            <dt className="text-xs text-slate-500">Public key</dt>
+            <dt className="text-xs text-slate-400">Public key</dt>
             <dd className="font-mono text-xs">{company.publicKey}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500">Knowledge dataset</dt>
+            <dt className="text-xs text-slate-400">Knowledge dataset</dt>
             <dd className="font-mono text-xs">{company.kbDataset}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500">Memory dataset</dt>
+            <dt className="text-xs text-slate-400">Memory dataset</dt>
             <dd className="font-mono text-xs">{company.memoryDataset}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500">Agent connection</dt>
+            <dt className="text-xs text-slate-400">Agent connection</dt>
             <dd className="font-mono text-xs">{company.agentConnectionId ?? "n/a"}</dd>
           </div>
         </dl>

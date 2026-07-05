@@ -5,10 +5,10 @@ import { recentEvents } from "@/lib/events";
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
+    <div className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
     </div>
   );
 }
@@ -32,7 +32,7 @@ export default async function OverviewPage({
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="text-xl font-semibold">Overview</h1>
-      <p className="mb-6 text-sm text-slate-500">
+      <p className="mb-6 text-sm text-slate-400">
         Your support agent at a glance.
       </p>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -50,21 +50,21 @@ export default async function OverviewPage({
         />
       </div>
 
-      <h2 className="mb-3 mt-10 text-sm font-semibold text-slate-700">Latest memory activity</h2>
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <h2 className="mb-3 mt-10 text-sm font-semibold text-slate-200">Latest memory activity</h2>
+      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0d0d18]">
         {events.length === 0 ? (
-          <p className="p-5 text-sm text-slate-400">
+          <p className="p-5 text-sm text-slate-500">
             No activity yet. Train your agent, then chat with it.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-white/5">
             {events.map((e) => (
               <li key={e.id} className="flex items-center gap-3 px-5 py-3 text-sm">
-                <span className="rounded-md bg-indigo-50 px-2 py-0.5 font-mono text-[11px] text-indigo-700">
+                <span className="rounded-md bg-indigo-500/10 px-2 py-0.5 font-mono text-[11px] text-indigo-300">
                   {e.type}
                 </span>
-                <span className="truncate text-slate-600">{e.label}</span>
-                <span className="ml-auto shrink-0 text-xs text-slate-400">
+                <span className="truncate text-slate-300">{e.label}</span>
+                <span className="ml-auto shrink-0 text-xs text-slate-500">
                   {new Date(e.ts).toLocaleTimeString()}
                 </span>
               </li>
@@ -72,9 +72,9 @@ export default async function OverviewPage({
           </ul>
         )}
       </div>
-      <p className="mt-4 text-sm text-slate-500">
+      <p className="mt-4 text-sm text-slate-400">
         Watch it live in the{" "}
-        <Link href={`/dashboard/${slug}/memory-feed`} className="font-medium text-indigo-600">
+        <Link href={`/dashboard/${slug}/memory-feed`} className="font-medium text-indigo-400">
           memory feed
         </Link>
         .

@@ -30,7 +30,7 @@ export default function CopyBlock({ code, label }: { code: string; label?: strin
   return (
     <div>
       {label ? (
-        <p className="mb-1.5 text-xs font-medium text-slate-600">{label}</p>
+        <p className="mb-1.5 text-xs font-medium text-slate-300">{label}</p>
       ) : null}
       <div className="relative">
         <pre className="overflow-x-auto rounded-xl bg-slate-900 p-4 pr-14 text-xs leading-relaxed text-slate-100">
@@ -44,7 +44,7 @@ export default function CopyBlock({ code, label }: { code: string; label?: strin
           className={`absolute right-2.5 top-2.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border shadow-sm transition ${
             copied
               ? "border-emerald-400/40 bg-slate-800 text-emerald-400"
-              : "border-white/10 bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+              : "border-white/10 bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-white"
           }`}
         >
           {copied ? <CheckIcon /> : <ClipboardIcon />}

@@ -15,7 +15,7 @@ export default async function ConversationDetailPage({
   if (!session) {
     return (
       <div className="mx-auto max-w-3xl">
-        <p className="text-sm text-slate-500">Conversation not found.</p>
+        <p className="text-sm text-slate-400">Conversation not found.</p>
       </div>
     );
   }
@@ -25,26 +25,26 @@ export default async function ConversationDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href={`/dashboard/${slug}/conversations`} className="text-xs text-indigo-600">
+      <Link href={`/dashboard/${slug}/conversations`} className="text-xs text-indigo-400">
         &larr; All conversations
       </Link>
       <h1 className="mt-2 text-xl font-semibold">{session.label ?? sessionId}</h1>
-      <p className="mb-6 text-xs text-slate-400">
+      <p className="mb-6 text-xs text-slate-500">
         {new Date(session.started_at).toLocaleString()} - {qas.length} turns - $
         {Number(session.cost_usd ?? 0).toFixed(4)}
       </p>
 
       <div className="space-y-4">
         {qas.map((qa) => (
-          <div key={qa.qa_id} className="rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-sm font-medium text-slate-800">{qa.question}</p>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{qa.answer}</p>
+          <div key={qa.qa_id} className="rounded-xl border border-white/10 bg-[#0d0d18] p-4">
+            <p className="text-sm font-medium text-slate-100">{qa.question}</p>
+            <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{qa.answer}</p>
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500">
                 {new Date(qa.time).toLocaleTimeString()}
               </span>
               {qa.feedback_score != null ? (
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-500">
                   feedback: {qa.feedback_score}
                 </span>
               ) : (

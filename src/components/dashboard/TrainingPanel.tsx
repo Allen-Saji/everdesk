@@ -85,10 +85,10 @@ export default function TrainingPanel({ slug }: { slug: string }) {
   };
 
   const kbState = status?.training
-    ? { label: "Building knowledge graph...", cls: "bg-amber-50 text-amber-700" }
+    ? { label: "Building knowledge graph...", cls: "bg-amber-500/10 text-amber-400" }
     : status?.kb === "DATASET_PROCESSING_COMPLETED"
-      ? { label: "Knowledge graph ready", cls: "bg-emerald-50 text-emerald-700" }
-      : { label: "Not trained yet", cls: "bg-slate-100 text-slate-500" };
+      ? { label: "Knowledge graph ready", cls: "bg-emerald-500/10 text-emerald-400" }
+      : { label: "Not trained yet", cls: "bg-white/5 text-slate-400" };
 
   return (
     <div className="space-y-6">
@@ -101,40 +101,40 @@ export default function TrainingPanel({ slug }: { slug: string }) {
         {kbState.label}
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <div className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
         <h3 className="text-sm font-semibold">Paste documentation</h3>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={6}
           placeholder="Paste product docs, FAQs, policies..."
-          className="mt-3 w-full rounded-lg border border-slate-200 p-3 text-sm outline-none focus:border-indigo-400"
+          className="mt-3 w-full rounded-lg border border-white/10 p-3 text-sm bg-white/5 text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-400"
         />
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <div className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
         <h3 className="text-sm font-semibold">Add page URLs</h3>
-        <p className="mt-1 text-xs text-slate-500">One per line. We fetch and learn each page.</p>
+        <p className="mt-1 text-xs text-slate-400">One per line. We fetch and learn each page.</p>
         <textarea
           value={urls}
           onChange={(e) => setUrls(e.target.value)}
           rows={3}
           placeholder={"https://yourproduct.com/docs\nhttps://yourproduct.com/faq"}
-          className="mt-3 w-full rounded-lg border border-slate-200 p-3 font-mono text-xs outline-none focus:border-indigo-400"
+          className="mt-3 w-full rounded-lg border border-white/10 p-3 font-mono text-xs bg-white/5 text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-400"
         />
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <div className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
         <h3 className="text-sm font-semibold">Upload files</h3>
-        <p className="mt-1 text-xs text-slate-500">PDF, Markdown, TXT, DOCX.</p>
+        <p className="mt-1 text-xs text-slate-400">PDF, Markdown, TXT, DOCX.</p>
         <input
           type="file"
           multiple
           onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
-          className="mt-3 block w-full text-sm text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700"
+          className="mt-3 block w-full text-sm text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-500/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-300"
         />
         {files.length > 0 && (
-          <p className="mt-2 text-xs text-slate-500">{files.map((f) => f.name).join(", ")}</p>
+          <p className="mt-2 text-xs text-slate-400">{files.map((f) => f.name).join(", ")}</p>
         )}
       </div>
 
@@ -142,11 +142,11 @@ export default function TrainingPanel({ slug }: { slug: string }) {
         <button
           onClick={submit}
           disabled={submitting || status?.training}
-          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
+          className="rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 disabled:opacity-50"
         >
           {submitting ? "Uploading..." : "Train agent"}
         </button>
-        {message ? <p className="text-sm text-slate-600">{message}</p> : null}
+        {message ? <p className="text-sm text-slate-300">{message}</p> : null}
       </div>
     </div>
   );

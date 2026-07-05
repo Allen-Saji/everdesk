@@ -20,7 +20,7 @@ export default async function ActionsPage({
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
         <h1 className="text-xl font-semibold">Actions</h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-400">
           Let the agent do things, not just say things: file tickets, ping your
           team, hit your API. Fired actions are written into the customer&apos;s
           memory, so the agent remembers what it did for them.

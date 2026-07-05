@@ -114,23 +114,23 @@ export default function CustomerGraph({
   }, [slug, customerId]);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
+    <div className="rounded-xl border border-white/10 bg-[#0d0d18] p-5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold">What the agent knows</h3>
         {counts ? (
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {counts.nodes} of {counts.total} memory nodes
           </span>
         ) : null}
       </div>
       {state === "loading" ? (
-        <p className="py-16 text-center text-sm text-slate-400">Loading memory graph...</p>
+        <p className="py-16 text-center text-sm text-slate-500">Loading memory graph...</p>
       ) : state === "empty" ? (
-        <p className="py-16 text-center text-sm text-slate-400">
+        <p className="py-16 text-center text-sm text-slate-500">
           No memories for this customer yet - or they have been forgotten.
         </p>
       ) : state === "error" ? (
-        <p className="py-16 text-center text-sm text-red-500">Could not load the graph.</p>
+        <p className="py-16 text-center text-sm text-red-400">Could not load the graph.</p>
       ) : null}
       <div
         ref={containerRef}

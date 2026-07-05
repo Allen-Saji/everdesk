@@ -9,7 +9,7 @@ export default async function MemoryFeedPage({
   return (
     <div className="mx-auto max-w-4xl">
       <h1 className="text-xl font-semibold">Memory feed</h1>
-      <p className="mb-6 text-sm text-slate-500">
+      <p className="mb-6 text-sm text-slate-400">
         Every recall, remember, resolution, and forget - live, as the agent
         thinks.
       </p>
