@@ -19,6 +19,14 @@
   [Real deployment](https://px402.allensaji.dev) (click the chat bubble)
 </div>
 
+<div align="center">
+  <a href="https://youtu.be/EcWY9Y1hItA">
+    <img src="public/demo-thumb.jpg" width="720" alt="Watch the EverDesk demo (2 minutes)" />
+  </a>
+  <br />
+  <sub><b>Watch the 2-minute demo</b> - the problem, onboarding, the one-line embed, live on px402, and the memory architecture</sub>
+</div>
+
 ---
 
 ## Why
