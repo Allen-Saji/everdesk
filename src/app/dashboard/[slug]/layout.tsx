@@ -74,7 +74,27 @@ export default async function DashboardLayout({
           </div>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 p-6 sm:p-8">{children}</main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 sm:hidden">
+          <Link href={`/dashboard/${slug}`} className="text-base font-bold tracking-tight">
+            Ever<span className="text-indigo-600">Desk</span>
+          </Link>
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/" });
+            }}
+          >
+            <button
+              type="submit"
+              className="text-sm font-medium text-slate-600 hover:text-indigo-700"
+            >
+              Sign out
+            </button>
+          </form>
+        </header>
+        <main className="min-w-0 flex-1 p-6 sm:p-8">{children}</main>
+      </div>
     </div>
   );
 }

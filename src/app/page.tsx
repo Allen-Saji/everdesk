@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MemoryConstellation from "@/components/landing/MemoryConstellation";
 import CodeTabs from "@/components/landing/CodeTabs";
+import AuthControl from "@/components/auth/AuthControl";
 
 // Real events from a verified live session (2026-07-04), not mockups.
 const FEED_LINES = [
@@ -128,6 +129,7 @@ export default function LandingPage() {
             >
               Get started
             </Link>
+            <AuthControl theme="dark" />
           </div>
         </nav>
       </header>

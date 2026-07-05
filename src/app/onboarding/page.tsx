@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Wizard from "@/components/onboarding/Wizard";
+import AuthControl from "@/components/auth/AuthControl";
 
 export const metadata = { title: "Onboard your company" };
 
@@ -11,6 +12,9 @@ export default function OnboardingPage() {
           <Link href="/" className="text-lg font-bold tracking-tight text-white">
             Ever<span className="text-indigo-400">Desk</span>
           </Link>
+          <div className="ml-auto">
+            <AuthControl theme="dark" />
+          </div>
         </nav>
       </header>
       <main className="mx-auto max-w-xl px-6 py-14">
