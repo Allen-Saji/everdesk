@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { getCompany } from "@/lib/companies";
+import { getRole, listMembers } from "@/lib/members";
+import { auth } from "@/auth";
 import CopyBlock from "@/components/dashboard/CopyBlock";
+import MembersPanel from "@/components/dashboard/MembersPanel";
 import { headers } from "next/headers";
 
 export default async function SettingsPage({
@@ -11,6 +14,10 @@ export default async function SettingsPage({
   const { slug } = await params;
   const company = await getCompany(slug);
   if (!company) notFound();
+
+  const session = await auth();
+  const email = session?.user?.email ?? "";
+  const [members, role] = await Promise.all([listMembers(slug), getRole(slug, email)]);
 
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "everdesk.allensaji.dev";
@@ -72,6 +79,13 @@ export default async function SettingsPage({
           </div>
         </dl>
       </section>
+
+      <MembersPanel
+        slug={slug}
+        initialMembers={members}
+        you={email}
+        isOwner={role === "owner"}
+      />
     </div>
   );
 }

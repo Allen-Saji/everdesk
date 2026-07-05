@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { auth, signOut } from "@/auth";
 import { getCompany } from "@/lib/companies";
+import { isMember } from "@/lib/members";
 
 const NAV = [
   { href: "", label: "Overview" },
@@ -21,8 +23,14 @@ export default async function DashboardLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) redirect(`/signin?callbackUrl=/dashboard/${slug}`);
+
   const company = await getCompany(slug);
   if (!company) notFound();
+  // Non-members get a 404, not a 403: the workspace's existence is not disclosed.
+  if (!(await isMember(slug, email))) notFound();
 
   return (
     <div className="flex min-h-dvh bg-slate-50 text-slate-900">
@@ -42,8 +50,28 @@ export default async function DashboardLayout({
             </Link>
           ))}
         </nav>
-        <div className="mt-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
-          Memory by Cognee Cloud
+        <div className="mt-auto space-y-2">
+          <Link
+            href="/dashboard"
+            className="block px-3 text-xs text-slate-500 hover:text-indigo-700"
+          >
+            All companies
+          </Link>
+          <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
+            <p className="truncate" title={email}>
+              {email}
+            </p>
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/" });
+              }}
+            >
+              <button type="submit" className="mt-1 text-slate-600 hover:text-indigo-700">
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
       </aside>
       <main className="min-w-0 flex-1 p-6 sm:p-8">{children}</main>
